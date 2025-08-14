@@ -1,5 +1,5 @@
 export const createCategoryQuery = `
-  INSERT INTO categories (name, description) VALUES (?, ?)
+  INSERT INTO categories (nom, parent_id) VALUES (?, ?)
 `;
 
 export const getCategoryByIdQuery = `
@@ -11,7 +11,7 @@ export const getAllCategoriesQuery = `
 `;
 
 export const updateCategoryQuery = `
-  UPDATE categories SET name = ?, description = ? WHERE id = ?
+  UPDATE categories SET nom = ?, parent_id = ? WHERE id = ?
 `;
 
 export const deleteCategoryQuery = `

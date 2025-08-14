@@ -1,4 +1,4 @@
-import { getAllCategories } from "@/database/category/categories.service";
+import { createCategory, deleteCategory, getAllCategories, getCategoryById, updateCategory } from "../database/category/categories.service";
 import { ipcMain } from "electron";
 
 export function registerCategoryHandlers() {
@@ -13,10 +13,41 @@ export function registerCategoryHandlers() {
   });
 
   ipcMain.handle("categories:add", async (event, data) => {
-    return "1"
+    try {
+      const newCategory = await createCategory(data);
+      return newCategory;
+    } catch (error) {
+      console.error("Error adding category:", error);
+      return null; // Return null in case of error
+    }
   });
 
   ipcMain.handle("categories:delete", async (event, id) => {
-    return "1"
+    try {
+      const result = await deleteCategory(id);
+      return result;
+    } catch (error) {
+      console.error("Error deleting category:", error);
+      return false; // Return false in case of error
+    }
+  });
+  ipcMain.handle("categories:update", async (event, id, data) => {
+    try {
+      const updatedCategory = await updateCategory(id, data);
+      return updatedCategory;
+    } catch (error) {
+      console.error("Error updating category:", error);
+      return null; // Return null in case of error
+    }
+  });
+
+  ipcMain.handle("categories:getById", async (event, id) => {
+    try {
+      const category = await getCategoryById(id);
+      return category;
+    } catch (error) {
+      console.error("Error fetching category by ID:", error);
+      return null; // Return null in case of error
+    }
   });
 }

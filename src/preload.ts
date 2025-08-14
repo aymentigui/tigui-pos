@@ -18,8 +18,16 @@ const renderer = {
     getAll: () => ipcRenderer.invoke("categories:getAll"),
     add: (data: any) => ipcRenderer.invoke("categories:add", data),
     delete: (id: number) => ipcRenderer.invoke("categories:delete", id),
+    update: (id: number, data: any) => ipcRenderer.invoke("categories:update", id, data),
+    getById: (id: number) => ipcRenderer.invoke("categories:getById", id),
   },
-  getAll: () => ipcRenderer.invoke("categories:getAll"),
+  brands: {
+    getAll: () => ipcRenderer.invoke("brands:getAll"),
+    add: (data: any) => ipcRenderer.invoke("brands:add", data),
+    delete: (id: number) => ipcRenderer.invoke("brands:delete", id),
+    update: (id: number, data: any) => ipcRenderer.invoke("brands:update", id, data),
+    getById: (id: number) => ipcRenderer.invoke("brands:getById", id),
+  },
 };
 
 contextBridge.exposeInMainWorld('electron', renderer);
