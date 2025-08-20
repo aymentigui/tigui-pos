@@ -54,6 +54,12 @@ export const createAttributValue = async (attributId: number, valeur: string) =>
   return result.lastID;
 };
 
+export const updateAttributValue = async (id: number, valeur: string) => {
+  const db = await initDB();
+  const result = await db.run("UPDATE attribut_values SET valeur = ? WHERE id = ?", [valeur, id]);
+  return result.changes > 0;
+}
+
 // Récupérer toutes les valeurs d’un attribut
 export const getAttributValuesByAttributId = async (attributId: number) => {
   const db = await initDB();

@@ -18,7 +18,7 @@ export function registerBrandHandlers() {
             return newBrand;
         } catch (error) {
             console.error("Error adding brand:", error);
-            return null; // Return null in case of error
+            return false; // Return null in case of error
         }
     });
 

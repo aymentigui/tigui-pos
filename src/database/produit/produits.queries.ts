@@ -28,8 +28,8 @@ export const deleteProduitQuery = `
 // VARIATIONS
 // =========================
 export const createVariationQuery = `
-  INSERT INTO produit_variations (produit_id, nom, prix_achat, prix_achat_ttc, prix_vente, quantite_stock, image, actif)
-  VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+  INSERT INTO produit_variations (produit_id, nom, prix_achat, prix_achat_ttc, prix_vente, code_barre ,quantite_stock, image, actif)
+  VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
 `;
 
 export const getVariationsByProduitQuery = `
@@ -38,7 +38,7 @@ export const getVariationsByProduitQuery = `
 
 export const updateVariationQuery = `
   UPDATE produit_variations
-  SET nom = ?, prix_achat = ?, prix_achat_ttc = ?, prix_vente = ?, quantite_stock = ?, image = ?, actif = ?
+  SET nom = ?, prix_achat = ?, prix_achat_ttc = ?, prix_vente = ?, code_barre=?,quantite_stock = ?, image = ?, actif = ?
   WHERE id = ?
 `;
 
@@ -59,10 +59,6 @@ export const addProduitBrandQuery = `
 
 export const addProduitTaxQuery = `
   INSERT INTO produit_taxes (produit_id, tax_id) VALUES (?, ?)
-`;
-
-export const addVariationTaxQuery = `
-  INSERT INTO variation_taxes (variation_id, tax_id) VALUES (?, ?)
 `;
 
 export const addVariationAttributQuery = `

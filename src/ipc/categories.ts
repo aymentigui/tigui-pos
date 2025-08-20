@@ -14,11 +14,11 @@ export function registerCategoryHandlers() {
 
   ipcMain.handle("categories:add", async (event, data) => {
     try {
-      const newCategory = await createCategory(data);
+      const newCategory = await createCategory(data.nom, data.parentId || null);
       return newCategory;
     } catch (error) {
       console.error("Error adding category:", error);
-      return null; // Return null in case of error
+      return false; // Return null in case of error
     }
   });
 
@@ -33,7 +33,7 @@ export function registerCategoryHandlers() {
   });
   ipcMain.handle("categories:update", async (event, id, data) => {
     try {
-      const updatedCategory = await updateCategory(id, data);
+      const updatedCategory = await updateCategory(id, data.nom, data.parentId || null);
       return updatedCategory;
     } catch (error) {
       console.error("Error updating category:", error);

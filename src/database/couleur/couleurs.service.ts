@@ -10,6 +10,7 @@ import {
 // Créer une couleur
 export const createCouleur = async (nom: string, valeur: string) => {
   const db = await initDB();
+  console.log("Creating couleur with name:", nom, "and value:", valeur);
   const result = await db.run(createCouleurQuery, [nom, valeur]);
   return result.lastID;
 };

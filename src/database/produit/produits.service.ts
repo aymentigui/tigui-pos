@@ -10,7 +10,6 @@ import {
   addProduitCategorieQuery,
   addProduitBrandQuery,
   addProduitTaxQuery,
-  addVariationTaxQuery,
   addVariationAttributQuery,
   addVariationCouleurQuery,
 } from "./produits.queries";
@@ -36,12 +35,14 @@ export const createProduit = async (data: any) => {
     variations,
   } = data;
 
+  let total_price = await calcul_price_ttc(taxes,db,prix_achat)
+
   const result = await db.run(createProduitQuery, [
     nom,
     code_barre,
     type,
     prix_achat,
-    prix_achat_ttc,
+    total_price,
     prix_vente,
     quantite_stock,
     image,
@@ -74,25 +75,21 @@ export const createProduit = async (data: any) => {
   // Variations
   if (variations && Array.isArray(variations)) {
     for (const variation of variations) {
+      let total_price = await calcul_price_ttc(taxes,db,variation.prix_achat)
+
       const resultVar = await db.run(createVariationQuery, [
         produitId,
         variation.nom,
         variation.prix_achat,
-        variation.prix_achat_ttc,
+        total_price,
         variation.prix_vente,
+        variation.code_barre,
         variation.quantite_stock,
         variation.image,
         variation.actif ?? 1,
       ]);
 
       const variationId = resultVar.lastID;
-
-      // Taxes pour variation
-      if (variation.taxes) {
-        for (const taxId of variation.taxes) {
-          await db.run(addVariationTaxQuery, [variationId, taxId]);
-        }
-      }
 
       // Attributs pour variation
       if (variation.attributs) {
@@ -147,7 +144,6 @@ export const updateProduit = async (id: number, data: any) => {
     code_barre,
     type,
     prix_achat,
-    prix_achat_ttc,
     prix_vente,
     quantite_stock,
     image,
@@ -158,12 +154,15 @@ export const updateProduit = async (id: number, data: any) => {
     variations,
   } = data;
 
+  let total_price = await calcul_price_ttc(taxes,db,prix_achat)
+
+
   await db.run(updateProduitQuery, [
     nom,
     code_barre,
     type,
     prix_achat,
-    prix_achat_ttc,
+    total_price,
     prix_vente,
     quantite_stock,
     image,
@@ -198,24 +197,20 @@ export const updateProduit = async (id: number, data: any) => {
 
   if (variations) {
     for (const variation of variations) {
+      let total_price = await calcul_price_ttc(taxes,db,variation.prix_achat)
       const resultVar = await db.run(createVariationQuery, [
         id,
         variation.nom,
         variation.prix_achat,
-        variation.prix_achat_ttc,
+        total_price,
         variation.prix_vente,
+        variation.code_barre,
         variation.quantite_stock,
         variation.image,
         variation.actif ?? 1,
       ]);
 
       const variationId = resultVar.lastID;
-
-      if (variation.taxes) {
-        for (const taxId of variation.taxes) {
-          await db.run(addVariationTaxQuery, [variationId, taxId]);
-        }
-      }
 
       if (variation.attributs) {
         for (const attrId of variation.attributs) {
@@ -250,3 +245,60 @@ export const getVariationById = async (id: number) => {
   const db = await initDB();
   return await db.get(`SELECT * FROM produit_variations WHERE id = ?`, [id]);
 };
+
+export const getAllVariationByProductId = async (productId: number) => {
+  const db = await initDB();
+  return await db.all(`SELECT * FROM produit_variations WHERE produit_id = ?`, [productId]);
+}
+
+export const getAllCategoriesByProductId = async (productId: number) => {
+  const db = await initDB();
+  return await db.all(`SELECT * FROM produit_categories WHERE produit_id = ?`, [productId]);
+}
+
+export const getAllBrandsByProductId = async (productId: number) => {
+  const db = await initDB();
+  return await db.all(`SELECT * FROM produit_brands WHERE produit_id = ?`, [productId]);
+};
+
+export const getAllTaxesByProductId = async (productId: number) => {
+  const db = await initDB();
+  return await db.all(`SELECT * FROM produit_taxes WHERE produit_id = ?`, [productId]);
+};
+
+
+
+const calcul_price_ttc = async (taxes: any[], db: any, prix_achat: any) => {
+  let total_price = prix_achat;
+  if (taxes && Array.isArray(taxes)) {
+    const taxesWithValues = await db.all("SELECT * FROM taxes");
+
+    if (taxesWithValues.length > 0) {
+      let taxesPourcentage = [];
+      let taxesAddition = [];
+
+      for (const { type, valeur } of taxesWithValues) {
+        if (type === "percentage") {
+          taxesPourcentage.push(parseFloat(valeur));
+        } else if (type === "addition") {
+          taxesAddition.push(parseFloat(valeur));
+        }
+      }
+
+      // 1. Appliquer les taxes en pourcentage
+      let totalPourcentage = total_price;
+      for (const p of taxesPourcentage) {
+        totalPourcentage += (totalPourcentage * p) / 100;
+      }
+
+      // 2. Appliquer les taxes additionnelles
+      let totalFinal = totalPourcentage;
+      for (const a of taxesAddition) {
+        totalFinal += a;
+      }
+
+      total_price = totalFinal;
+    }
+  }
+  return total_price;
+}
