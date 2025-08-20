@@ -901,7 +901,7 @@ export default function Produits() {
                                         <div>
                                             <label className="block text-sm font-medium text-gray-700 mb-2">
                                                 الماركات
-                                            </label>
+                                            </label> 
                                             <Select
                                                 isMulti
                                                 options={brandOptions}
