@@ -940,7 +940,7 @@ export default function Produits() {
                                 <div className="space-y-6">
                                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
                                         <div>
-                                            <label className="block text-sm font-medium text-gray-700 mb-2 flex items-center">
+                                            <label className="text-sm font-medium text-gray-700 mb-2 flex items-center">
                                                 <Palette size={16} className="ml-1" />
                                                 الألوان
                                             </label>
@@ -958,7 +958,7 @@ export default function Produits() {
                                         </div>
 
                                         <div>
-                                            <label className="block text-sm font-medium text-gray-700 mb-2 flex items-center">
+                                            <label className="text-sm font-medium text-gray-700 mb-2 flex items-center">
                                                 <Tag size={16} className="ml-1" />
                                                 السمات
                                             </label>
