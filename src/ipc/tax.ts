@@ -1,4 +1,4 @@
-import { createTax, deleteTax, getAllTaxes, getTaxById, updateTax } from "../database/tax/taxes.service";
+import { createTax, deleteTax, getAllTaxes, getTaxById, updateTax } from "../database/taxes.service";
 import { ipcMain } from "electron";
 
 export function registerTaxHandlers() {

@@ -6,7 +6,7 @@ import {
     updateUser,
     getUserByUsername,
     getUserByEmail
-} from "../database/user/users.service";
+} from "../database/users.service";
 
 import { ipcMain } from "electron";
 

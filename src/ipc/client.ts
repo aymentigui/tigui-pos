@@ -1,4 +1,4 @@
-import { createClient, deleteClient, getAllClients, getClientById, updateClient } from "../database/client/clients.service";
+import { createClient, deleteClient, getAllClients, getClientById, updateClient } from "../database/clients.service";
 import { ipcMain } from "electron";
 
 export function registerClientHandlers() {

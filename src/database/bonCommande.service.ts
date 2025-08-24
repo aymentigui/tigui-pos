@@ -1,17 +1,8 @@
-import { initDB } from "../connection";
-import {
-  createBonCommandeQuery,
-  getBonCommandeByIdQuery,
-  getAllBonCommandesQuery,
-  updateBonCommandeQuery,
-  deleteBonCommandeQuery,
-  createBonCommandeProduitQuery,
-  deleteProduitsByBonIdQuery,
-  createBonCommandeFraisQuery,
-  deleteFraisByBonIdQuery,
-} from "./bonCommande.queries";
+import { initDB } from "./connection";
 
-// Créer un bon de commande avec ses produits et ses frais
+// ===============================
+// CREATE BON DE COMMANDE
+// ===============================
 export const createBonCommande = async (
   fournisseurId: number | null,
   dateCommande: string,
@@ -29,38 +20,39 @@ export const createBonCommande = async (
   const db = await initDB();
 
   // Insérer le bon
-  const result = await db.run(createBonCommandeQuery, [
-    fournisseurId,
-    dateCommande,
-    reductionType,
-    reductionValeur,
-  ]);
+  const result = await db.run(
+    `INSERT INTO bons_commande (fournisseur_id, date_commande, reduction_type, reduction_valeur)
+     VALUES (?, ?, ?, ?)`,
+    [fournisseurId, dateCommande, reductionType, reductionValeur]
+  );
   const bonId = result.lastID;
 
   // Insérer les produits
   for (const p of produits) {
-    await db.run(createBonCommandeProduitQuery, [
-      bonId,
-      p.produitId,
-      p.variationId,
-      p.quantite,
-      p.prixAchat,
-      p.prixAchatTtc,
-    ]);
+    await db.run(
+      `INSERT INTO bon_commande_produits (bon_id, produit_id, variation_id, quantite, prix_achat, prix_achat_ttc)
+       VALUES (?, ?, ?, ?, ?, ?)`,
+      [bonId, p.produitId, p.variationId, p.quantite, p.prixAchat, p.prixAchatTtc]
+    );
   }
 
   // Insérer les frais
   for (const f of frais) {
-    await db.run(createBonCommandeFraisQuery, [bonId, f.nom, f.montant]);
+    await db.run(
+      `INSERT INTO bon_commande_frais (bon_id, nom, montant) VALUES (?, ?, ?)`,
+      [bonId, f.nom, f.montant]
+    );
   }
 
   return bonId;
 };
 
-// Récupérer un bon de commande par ID
+// ===============================
+// GET BON DE COMMANDE BY ID
+// ===============================
 export const getBonCommandeById = async (id: number) => {
   const db = await initDB();
-  const bon = await db.get(getBonCommandeByIdQuery, [id]);
+  const bon = await db.get(`SELECT * FROM bons_commande WHERE id = ?`, [id]);
 
   if (!bon) return null;
 
@@ -76,12 +68,13 @@ export const getBonCommandeById = async (id: number) => {
   return { ...bon, produits, frais };
 };
 
-// Récupérer tous les bons de commande
+// ===============================
+// GET ALL BONS DE COMMANDE
+// ===============================
 export const getAllBonCommandes = async () => {
   const db = await initDB();
-  const bons = await db.all(getAllBonCommandesQuery);
+  const bons = await db.all(`SELECT * FROM bons_commande`);
 
-  // On enrichit chaque bon avec ses produits et frais
   const bonsWithDetails = await Promise.all(
     bons.map(async (bon: any) => {
       const produits = await db.all(
@@ -99,7 +92,9 @@ export const getAllBonCommandes = async () => {
   return bonsWithDetails;
 };
 
-// Mettre à jour un bon de commande (on supprime/recrée produits et frais)
+// ===============================
+// UPDATE BON DE COMMANDE
+// ===============================
 export const updateBonCommande = async (
   id: number,
   fournisseurId: number | null,
@@ -117,42 +112,43 @@ export const updateBonCommande = async (
 ) => {
   const db = await initDB();
 
-  // Mettre à jour le bon
-  const result = await db.run(updateBonCommandeQuery, [
-    fournisseurId,
-    dateCommande,
-    reductionType,
-    reductionValeur,
-    id,
-  ]);
+  // Update bon
+  await db.run(
+    `UPDATE bons_commande
+     SET fournisseur_id = ?, date_commande = ?, reduction_type = ?, reduction_valeur = ?
+     WHERE id = ?`,
+    [fournisseurId, dateCommande, reductionType, reductionValeur, id]
+  );
 
   // Supprimer anciens produits/frais
-  await db.run(deleteProduitsByBonIdQuery, [id]);
-  await db.run(deleteFraisByBonIdQuery, [id]);
+  await db.run(`DELETE FROM bon_commande_produits WHERE bon_id = ?`, [id]);
+  await db.run(`DELETE FROM bon_commande_frais WHERE bon_id = ?`, [id]);
 
   // Réinsérer produits
   for (const p of produits) {
-    await db.run(createBonCommandeProduitQuery, [
-      id,
-      p.produitId,
-      p.variationId,
-      p.quantite,
-      p.prixAchat,
-      p.prixAchatTtc,
-    ]);
+    await db.run(
+      `INSERT INTO bon_commande_produits (bon_id, produit_id, variation_id, quantite, prix_achat, prix_achat_ttc)
+       VALUES (?, ?, ?, ?, ?, ?)`,
+      [id, p.produitId, p.variationId, p.quantite, p.prixAchat, p.prixAchatTtc]
+    );
   }
 
   // Réinsérer frais
   for (const f of frais) {
-    await db.run(createBonCommandeFraisQuery, [id, f.nom, f.montant]);
+    await db.run(
+      `INSERT INTO bon_commande_frais (bon_id, nom, montant) VALUES (?, ?, ?)`,
+      [id, f.nom, f.montant]
+    );
   }
 
-  return result.changes > 0;
+  return true;
 };
 
-// Supprimer un bon de commande (produits & frais supprimés en cascade)
+// ===============================
+// DELETE BON DE COMMANDE
+// ===============================
 export const deleteBonCommande = async (id: number) => {
   const db = await initDB();
-  const result = await db.run(deleteBonCommandeQuery, [id]);
+  const result = await db.run(`DELETE FROM bons_commande WHERE id = ?`, [id]);
   return result.changes > 0;
 };

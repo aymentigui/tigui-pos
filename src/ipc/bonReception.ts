@@ -5,7 +5,7 @@ import {
   getAllBonReceptions,
   updateBonReception,
   deleteBonReception,
-} from "../database/bon-reception/bonReception.service";
+} from "../database/bonReception.service";
 
 export function registerBonReceptionHandlers() {
   // =========================

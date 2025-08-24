@@ -10,7 +10,7 @@ import {
   getAllTaxesByProductId,
   getAllBrandsByProductId,
   getAllCategoriesByProductId
-} from "../database/produit/produits.service";
+} from "../database/produits.service";
 
 export function registerProduitHandlers() {
   // =========================

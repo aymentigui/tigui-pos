@@ -4,7 +4,7 @@ import {
     getAllFournisseurs,
     getFournisseurById,
     updateFournisseur
-} from "../database/suppliers/suppliers.service";
+} from "../database/suppliers.service";
 
 import { ipcMain } from "electron";
 

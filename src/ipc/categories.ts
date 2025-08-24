@@ -1,4 +1,4 @@
-import { createCategory, deleteCategory, getAllCategories, getCategoryById, updateCategory } from "../database/category/categories.service";
+import { createCategory, deleteCategory, getAllCategories, getCategoryById, updateCategory } from "../database/categories.service";
 import { ipcMain } from "electron";
 
 export function registerCategoryHandlers() {

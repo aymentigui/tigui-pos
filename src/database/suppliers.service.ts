@@ -1,11 +1,4 @@
-import { initDB } from "../connection";
-import { 
-  createFournisseurQuery,
-  getFournisseurByIdQuery,
-  getAllFournisseursQuery,
-  updateFournisseurQuery,
-  deleteFournisseurQuery
-} from "./suppliers.queries";
+import { initDB } from "./connection";
 
 export const createFournisseur = async (
   nom: string,
@@ -17,19 +10,25 @@ export const createFournisseur = async (
   adresse: string
 ) => {
   const db = await initDB();
-  const result = await db.run(createFournisseurQuery, [nom, prenom, societe, email, tel1, tel2, adresse]);
+  const query = `
+    INSERT INTO fournisseurs (nom, prenom, societe, email, tel1, tel2, adresse)
+    VALUES (?, ?, ?, ?, ?, ?, ?)
+  `;
+  const result = await db.run(query, [nom, prenom, societe, email, tel1, tel2, adresse]);
   return result.lastID;
 };
 
 export const getFournisseurById = async (id: number) => {
   const db = await initDB();
-  const result = await db.get(getFournisseurByIdQuery, [id]);
+  const query = `SELECT * FROM fournisseurs WHERE id = ?`;
+  const result = await db.get(query, [id]);
   return result;
 };
 
 export const getAllFournisseurs = async () => {
   const db = await initDB();
-  const result = await db.all(getAllFournisseursQuery);
+  const query = `SELECT * FROM fournisseurs`;
+  const result = await db.all(query);
   return result;
 };
 
@@ -44,12 +43,18 @@ export const updateFournisseur = async (
   adresse: string
 ) => {
   const db = await initDB();
-  const result = await db.run(updateFournisseurQuery, [nom, prenom, societe, email, tel1, tel2, adresse, id]);
+  const query = `
+    UPDATE fournisseurs
+    SET nom = ?, prenom = ?, societe = ?, email = ?, tel1 = ?, tel2 = ?, adresse = ?
+    WHERE id = ?
+  `;
+  const result = await db.run(query, [nom, prenom, societe, email, tel1, tel2, adresse, id]);
   return result.changes > 0;
 };
 
 export const deleteFournisseur = async (id: number) => {
   const db = await initDB();
-  const result = await db.run(deleteFournisseurQuery, [id]);
+  const query = `DELETE FROM fournisseurs WHERE id = ?`;
+  const result = await db.run(query, [id]);
   return result.changes > 0;
 };

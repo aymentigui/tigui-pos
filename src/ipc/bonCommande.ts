@@ -5,7 +5,7 @@ import {
   getAllBonCommandes,
   updateBonCommande,
   deleteBonCommande,
-} from "../database/bon_commande/bonCommande.service";
+} from "../database/bonCommande.service";
 
 export function registerBonCommandeHandlers() {
   // =========================

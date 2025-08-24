@@ -23,6 +23,10 @@ interface Produit {
     brands: any[];
     taxes: any[];
     variations: Variation[];
+    variations_name: string;
+    variations_prix_vente: string;
+    variations_prix_achat: string;
+    variations_quantite_stock:string;
 }
 
 interface Variation {
@@ -561,22 +565,22 @@ export default function Produits() {
                                                 <div className="text-sm font-medium text-gray-900">{produit.nom}</div>
                                                 <div className="text-sm text-gray-500">{produit.code_barre}</div>
                                             </td>
-                                            <td className="px-6 py-4 whitespace-nowrap">
+                                            <td className="px-6 py-4">
                                                 <div className="text-sm text-gray-500 capitalize">
                                                     {produit.type === 'simple' ? 'بسيط' : 'متغير'}
                                                     {produit.type === 'variable' && (
-                                                        <span className="text-xs text-blue-600 mr-1"> ({produit.variations?.length} اختلاف)</span>
+                                                        <span className="text-xs text-blue-600 mr-1"> ({produit.variations_name})</span>
                                                     )}
                                                 </div>
                                             </td>
-                                            <td className="px-6 py-4 whitespace-nowrap">
-                                                <div className="text-sm text-gray-500">{produit.prix_achat} د.ج</div>
+                                            <td className="px-6 py-4">
+                                                <div className="text-sm text-gray-500">{produit.type==="simple"?produit.prix_achat:produit.variations_prix_achat} د.ج</div>
                                             </td>
-                                            <td className="px-6 py-4 whitespace-nowrap">
-                                                <div className="text-sm text-gray-500">{produit.prix_vente} د.ج</div>
+                                            <td className="px-6 py-4">
+                                                <div className="text-sm text-gray-500">{produit.type==="simple"?produit.prix_vente:produit.variations_prix_vente} د.ج</div>
                                             </td>
-                                            <td className="px-6 py-4 whitespace-nowrap">
-                                                <div className="text-sm text-gray-500">{produit.quantite_stock}</div>
+                                            <td className="px-6 py-4">
+                                                <div className="text-sm text-gray-500">{produit.type==="simple"?produit.quantite_stock:produit.variations_quantite_stock}</div>
                                             </td>
                                             <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
                                                 <div className="flex items-center space-x-2 rtl:space-x-reverse">

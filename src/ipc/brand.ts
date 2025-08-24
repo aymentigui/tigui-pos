@@ -1,4 +1,4 @@
-import { getAllBrands,createBrand, deleteBrand, updateBrand, getBrandById } from "../database/brand/brands.service";
+import { getAllBrands,createBrand, deleteBrand, updateBrand, getBrandById } from "../database/brands.service";
 import { ipcMain } from "electron";
 
 export function registerBrandHandlers() {
